@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
-import { Earth, RotateCcw, Share2, TrendingDown, Star, Sparkles, Car, Plane, Beef, Zap, ExternalLink, Info, Database, Trophy, ChevronDown, ChevronUp } from 'lucide-react';
+import { RotateCcw, Share2, TrendingDown, Star, Sparkles, Car, Plane, Beef, Zap, ExternalLink, Info, Database, Trophy, ChevronDown, ChevronUp, Brain } from 'lucide-react';
 import { FootprintResult } from '../types';
 import { getCO2Equivalent, REFERENCE_DATA } from '../utils/footprintCalculator';
 import { DataSourcesModal } from './DataSourcesModal';
+import { MLInsightsModal } from './MLInsightsModal';
 import { GamificationPanel } from './GamificationPanel';
 import { AIInsights } from './AIInsights';
 import { ChallengeSystem } from './ChallengeSystem';
 import { SocialComparison } from './SocialComparison';
+import { DataSciencePanel } from './DataSciencePanel';
 import { useGamifiedData } from '../services/officialDataService';
 import { UserProfile } from '../types';
 
@@ -18,6 +20,7 @@ interface ResultsProps {
 
 export function Results({ result, profile, onRestart }: ResultsProps) {
   const [showDataSources, setShowDataSources] = useState(false);
+  const [showMLInsights, setShowMLInsights] = useState(false);
   const [showGamification, setShowGamification] = useState(true);
   const [expandedSection, setExpandedSection] = useState<string | null>('score');
   
@@ -76,28 +79,28 @@ export function Results({ result, profile, onRestart }: ResultsProps) {
     
     const equivalents = [
       {
-        icon: <Car className="w-5 h-5" />,
+        icon: <Car className="w-4 h-4 sm:w-5 sm:h-5" />,
         text: `${Math.round(totalCO2PerYear / 120 / 365)} km/jour en voiture`,
         description: '(120g CO2/km - ADEME)',
         source: 'ADEME',
         isRealTime: false
       },
       {
-        icon: <Plane className="w-5 h-5" />,
+        icon: <Plane className="w-4 h-4 sm:w-5 sm:h-5" />,
         text: `${Math.round(totalCO2PerYear / 2300)} vol(s) Paris-NY/an`,
         description: '(2,3t CO2/vol - GIEC)',
         source: 'GIEC',
         isRealTime: false
       },
       {
-        icon: <Beef className="w-5 h-5" />,
+        icon: <Beef className="w-4 h-4 sm:w-5 sm:h-5" />,
         text: `${Math.round(totalCO2PerYear / 35 / 52)} steaks/semaine`,
         description: '(35kg CO2/kg - ADEME)',
         source: 'ADEME',
         isRealTime: false
       },
       {
-        icon: <Zap className="w-5 h-5" />,
+        icon: <Zap className="w-4 h-4 sm:w-5 sm:h-5" />,
         text: `${Math.round(totalCO2PerYear / currentCO2Intensity)} kWh/an`,
         description: `(${currentCO2Intensity}g CO2/kWh - RTE)`,
         source: 'RTE',
@@ -157,35 +160,43 @@ export function Results({ result, profile, onRestart }: ResultsProps) {
     {
       id: 'score',
       title: 'Votre score',
-      icon: <Star className="w-5 h-5" />,
+      icon: <Star className="w-4 h-4 sm:w-5 sm:h-5" />,
       content: (
-        <div className="text-center space-y-6">
-          <div className="relative mb-8">
-            <div className="flex justify-center items-center space-x-4 mb-6">
-              {/* Planet visualization */}
+        <div className="text-center space-y-4 sm:space-y-6">
+          <div className="relative mb-6 sm:mb-8">
+            <div className="flex justify-center items-center space-x-2 sm:space-x-4 mb-4 sm:mb-6">
+              {/* Planet visualization avec votre nouvelle image SANS carré */}
               <div className="relative">
                 {[...Array(Math.min(Math.ceil(result.planetsNeeded), 5))].map((_, i) => (
                   <div
                     key={i}
-                    className={`w-12 h-12 bg-gradient-to-br ${getCategoryColor(result.category)} rounded-full shadow-2xl inline-block mx-1`}
+                    className="inline-block mx-0.5 sm:mx-1 relative"
                     style={{
                       opacity: i < result.planetsNeeded ? 1 : 0.3
                     }}
                   >
-                    <Earth className="w-full h-full text-white p-2" />
+                    <img 
+                      src="/planet-new.png" 
+                      alt="Planète" 
+                      className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 object-cover rounded-full"
+                      style={{ 
+                        filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))'
+                      }}
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-br ${getCategoryColor(result.category)} opacity-50 rounded-full`}></div>
                   </div>
                 ))}
               </div>
             </div>
             
             <div className="text-center">
-              <div className={`inline-block text-4xl lg:text-5xl font-bold bg-gradient-to-r ${getCategoryColor(result.category)} bg-clip-text text-transparent mb-4`}>
+              <div className={`inline-block text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r ${getCategoryColor(result.category)} bg-clip-text text-transparent mb-2 sm:mb-4`}>
                 {result.planetsNeeded}
               </div>
-              <p className="text-lg lg:text-xl text-white font-semibold mb-2">
+              <p className="text-base sm:text-lg lg:text-xl text-white font-semibold mb-2">
                 planète{result.planetsNeeded !== 1 ? 's' : ''}
               </p>
-              <p className="text-sm text-slate-300 mb-2">
+              <p className="text-xs sm:text-sm text-slate-300 mb-1 sm:mb-2">
                 Score : {result.totalScore}/10 points
               </p>
               <p className="text-xs text-cyan-300">
@@ -199,7 +210,7 @@ export function Results({ result, profile, onRestart }: ResultsProps) {
     {
       id: 'breakdown',
       title: 'Détail par catégorie',
-      icon: <TrendingDown className="w-5 h-5" />,
+      icon: <TrendingDown className="w-4 h-4 sm:w-5 sm:h-5" />,
       content: (
         <div className="space-y-3">
           {Object.entries(result.breakdown).map(([key, value]) => {
@@ -211,10 +222,10 @@ export function Results({ result, profile, onRestart }: ResultsProps) {
               <div key={key} className="bg-slate-800/50 rounded-lg p-3">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center space-x-2">
-                    <span className="text-lg">{getBreakdownIcon(key)}</span>
+                    <span className="text-base sm:text-lg">{getBreakdownIcon(key)}</span>
                     <span className="text-white font-medium text-sm">{getBreakdownLabel(key)}</span>
                   </div>
-                  <span className="text-white font-bold">
+                  <span className="text-white font-bold text-sm">
                     {value.toFixed(1)}
                   </span>
                 </div>
@@ -246,12 +257,12 @@ export function Results({ result, profile, onRestart }: ResultsProps) {
     {
       id: 'equivalents',
       title: 'Équivalences concrètes',
-      icon: <Sparkles className="w-5 h-5" />,
+      icon: <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />,
       content: (
         <div className="space-y-3">
           {realLifeEquivalents.map((equiv, index) => (
             <div key={index} className={`bg-slate-800/50 rounded-lg p-3 flex items-start space-x-3 ${equiv.isRealTime ? 'ring-1 ring-cyan-400/50' : ''}`}>
-              <div className={`${equiv.isRealTime ? 'text-cyan-400' : 'text-cyan-400'} mt-1`}>
+              <div className={`${equiv.isRealTime ? 'text-cyan-400' : 'text-cyan-400'} mt-1 flex-shrink-0`}>
                 {equiv.icon}
               </div>
               <div className="flex-1 min-w-0">
@@ -324,59 +335,60 @@ export function Results({ result, profile, onRestart }: ResultsProps) {
           ))}
         </div>
 
-        <div className="relative z-10 container mx-auto px-4 py-8 min-h-screen">
+        <div className="relative z-10 container mx-auto px-4 py-6 sm:py-8 min-h-screen">
           <div className="w-full max-w-7xl mx-auto">
             {/* Toggle Gamification */}
-            <div className="text-center mb-6">
+            <div className="text-center mb-4 sm:mb-6">
               <button
                 onClick={() => setShowGamification(!showGamification)}
-                className="flex items-center space-x-2 mx-auto px-4 py-2 bg-gradient-to-r from-purple-500/30 to-pink-500/30 backdrop-blur-md text-white font-medium rounded-full transition-all duration-300 hover:from-purple-500/50 hover:to-pink-500/50 border border-purple-500/30 text-sm"
+                className="flex items-center space-x-2 mx-auto px-3 sm:px-4 py-2 bg-gradient-to-r from-purple-500/30 to-pink-500/30 backdrop-blur-md text-white font-medium rounded-full transition-all duration-300 hover:from-purple-500/50 hover:to-pink-500/50 border border-purple-500/30 text-xs sm:text-sm"
               >
                 <Trophy className="w-4 h-4" />
-                <span>{showGamification ? 'Masquer' : 'Afficher'} les fonctionnalités avancées</span>
+                <span className="hidden sm:inline">{showGamification ? 'Masquer' : 'Afficher'} les fonctionnalités avancées</span>
+                <span className="sm:hidden">{showGamification ? 'Masquer' : 'Afficher'} avancé</span>
               </button>
             </div>
 
-            <div className="flex flex-col lg:flex-row gap-6">
+            <div className={`grid gap-4 sm:gap-6 ${showGamification ? 'xl:grid-cols-3' : 'grid-cols-1'}`}>
               {/* Colonne principale - Résultats */}
-              <div className={`${showGamification ? 'lg:w-2/3' : 'w-full'} flex-shrink-0`}>
-                {/* Title and Category - TITRE CORRIGÉ */}
-                <div className="text-center mb-8">
-                  <div className="mb-6">
-                    <Star className="w-12 h-12 mx-auto text-yellow-400 mb-4" />
+              <div className={`${showGamification ? 'xl:col-span-2' : 'col-span-1'} relative z-20`}>
+                {/* Title and Category - TITRE CORRIGÉ RESPONSIVE */}
+                <div className="text-center mb-6 sm:mb-8">
+                  <div className="mb-4 sm:mb-6">
+                    <Star className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 mx-auto text-yellow-400 mb-3 sm:mb-4" />
                     <div className="px-2">
-                      <h1 className={`text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r ${getCategoryColor(result.category)} bg-clip-text text-transparent mb-4 leading-tight break-words`}>
+                      <h1 className={`text-xl sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold bg-gradient-to-r ${getCategoryColor(result.category)} bg-clip-text text-transparent mb-3 sm:mb-4 leading-tight break-words hyphens-auto`}>
                         {result.title}
                       </h1>
                     </div>
-                    <p className="text-base sm:text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto px-2">
+                    <p className="text-sm sm:text-base lg:text-lg text-slate-300 leading-relaxed max-w-2xl mx-auto px-2">
                       {getCategoryMessage(result.category)}
                     </p>
                   </div>
                 </div>
 
                 {/* Sections scrollables */}
-                <div className="space-y-4 mb-6">
+                <div className="space-y-3 sm:space-y-4 mb-4 sm:mb-6">
                   {sections.map((section) => (
                     <div key={section.id} className="bg-slate-800/30 backdrop-blur-md rounded-xl border border-slate-700/50">
                       <button
                         onClick={() => setExpandedSection(expandedSection === section.id ? null : section.id)}
-                        className="w-full p-4 flex items-center justify-between text-left hover:bg-slate-700/30 transition-colors rounded-xl"
+                        className="w-full p-3 sm:p-4 flex items-center justify-between text-left hover:bg-slate-700/30 transition-colors rounded-xl"
                       >
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center space-x-2 sm:space-x-3">
                           <div className="text-cyan-400">
                             {section.icon}
                           </div>
-                          <h2 className="text-lg font-bold text-white">{section.title}</h2>
+                          <h2 className="text-base sm:text-lg font-bold text-white">{section.title}</h2>
                         </div>
                         <div className="text-slate-400">
-                          {expandedSection === section.id ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
+                          {expandedSection === section.id ? <ChevronUp className="w-4 h-4 sm:w-5 sm:h-5" /> : <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />}
                         </div>
                       </button>
                       
                       {expandedSection === section.id && (
-                        <div className="px-4 pb-4">
-                          <div className="border-t border-slate-700/50 pt-4">
+                        <div className="px-3 sm:px-4 pb-3 sm:pb-4">
+                          <div className="border-t border-slate-700/50 pt-3 sm:pt-4">
                             {section.content}
                           </div>
                         </div>
@@ -385,11 +397,11 @@ export function Results({ result, profile, onRestart }: ResultsProps) {
                   ))}
                 </div>
 
-                {/* Actions */}
-                <div className="flex flex-wrap justify-center gap-3">
+                {/* Actions - AVEC PADDING BOTTOM POUR ÉVITER LE BADGE */}
+                <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-2 sm:gap-3 pb-20 sm:pb-16">
                   <button
                     onClick={onRestart}
-                    className="flex items-center space-x-2 px-6 py-3 bg-slate-700/50 backdrop-blur-md text-white font-semibold rounded-full transition-all duration-300 hover:bg-slate-600/50 hover:scale-105 shadow-lg text-sm"
+                    className="flex items-center justify-center space-x-2 px-4 sm:px-6 py-2 sm:py-3 bg-slate-700/50 backdrop-blur-md text-white font-semibold rounded-full transition-all duration-300 hover:bg-slate-600/50 hover:scale-105 shadow-lg text-sm"
                   >
                     <RotateCcw className="w-4 h-4" />
                     <span>Refaire le test</span>
@@ -397,7 +409,7 @@ export function Results({ result, profile, onRestart }: ResultsProps) {
                   
                   <button
                     onClick={shareResults}
-                    className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold rounded-full transition-all duration-300 hover:from-cyan-400 hover:to-purple-400 hover:scale-105 shadow-lg hover:shadow-xl text-sm"
+                    className="flex items-center justify-center space-x-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-cyan-500 to-purple-500 text-white font-semibold rounded-full transition-all duration-300 hover:from-cyan-400 hover:to-purple-400 hover:scale-105 shadow-lg hover:shadow-xl text-sm"
                   >
                     <Share2 className="w-4 h-4" />
                     <span>Partager</span>
@@ -405,18 +417,29 @@ export function Results({ result, profile, onRestart }: ResultsProps) {
                   
                   <button
                     onClick={() => setShowDataSources(true)}
-                    className="flex items-center space-x-2 px-6 py-3 bg-slate-700/50 backdrop-blur-md text-white font-semibold rounded-full transition-all duration-300 hover:bg-slate-600/50 hover:scale-105 shadow-lg text-sm"
+                    className="flex items-center justify-center space-x-2 px-4 sm:px-6 py-2 sm:py-3 bg-slate-700/50 backdrop-blur-md text-white font-semibold rounded-full transition-all duration-300 hover:bg-slate-600/50 hover:scale-105 shadow-lg text-sm"
                   >
                     <Database className="w-4 h-4" />
                     <span>Sources</span>
                   </button>
+
+                  <button
+                    onClick={() => setShowMLInsights(true)}
+                    className="flex items-center justify-center space-x-2 px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold rounded-full transition-all duration-300 hover:from-blue-400 hover:to-indigo-400 hover:scale-105 shadow-lg text-sm"
+                  >
+                    <Brain className="w-4 h-4" />
+                    <span>ML Insights</span>
+                  </button>
                 </div>
               </div>
 
-              {/* Sidebar fonctionnalités avancées */}
+              {/* Sidebar fonctionnalités avancées avec z-index corrigé ET PADDING BOTTOM */}
               {showGamification && gamifiedData && (
-                <div className="lg:w-1/3 flex-shrink-0">
-                  <div className="sticky top-4 space-y-4 max-h-screen overflow-y-auto">
+                <div className="xl:col-span-1 relative z-10">
+                  <div className="space-y-3 sm:space-y-4 xl:sticky xl:top-4 xl:max-h-screen xl:overflow-y-auto xl:custom-scrollbar xl:pr-2 pb-20 sm:pb-16">
+                    {/* Data Science Panel */}
+                    <DataSciencePanel profile={profile} result={result} />
+                    
                     {/* IA Insights */}
                     <AIInsights profile={profile} result={result} />
                     
@@ -453,6 +476,11 @@ export function Results({ result, profile, onRestart }: ResultsProps) {
       <DataSourcesModal 
         isOpen={showDataSources} 
         onClose={() => setShowDataSources(false)} 
+      />
+
+      <MLInsightsModal 
+        isOpen={showMLInsights} 
+        onClose={() => setShowMLInsights(false)} 
       />
     </>
   );

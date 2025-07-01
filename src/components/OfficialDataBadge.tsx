@@ -7,7 +7,7 @@ export function OfficialDataBadge() {
 
   if (loading) {
     return (
-      <div className="fixed bottom-4 right-4 bg-blue-600/90 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm flex items-center space-x-2 shadow-lg animate-pulse">
+      <div className="fixed bottom-4 right-4 bg-blue-600/90 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm flex items-center space-x-2 shadow-lg animate-pulse z-50">
         <Clock className="w-4 h-4 animate-spin" />
         <span>Chargement données temps réel...</span>
       </div>
@@ -16,7 +16,7 @@ export function OfficialDataBadge() {
 
   if (error) {
     return (
-      <div className="fixed bottom-4 right-4 bg-orange-600/90 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm flex items-center space-x-2 shadow-lg">
+      <div className="fixed bottom-4 right-4 bg-orange-600/90 backdrop-blur-md text-white px-4 py-2 rounded-full text-sm flex items-center space-x-2 shadow-lg z-50">
         <Shield className="w-4 h-4" />
         <span>Données de référence utilisées</span>
       </div>
@@ -39,7 +39,7 @@ export function OfficialDataBadge() {
   };
 
   return (
-    <div className={`fixed bottom-4 right-4 ${getIntensityColor()} backdrop-blur-md text-white px-4 py-2 rounded-full text-sm flex items-center space-x-2 shadow-lg group cursor-pointer transition-all duration-300 hover:scale-105`}>
+    <div className={`fixed bottom-4 right-4 ${getIntensityColor()} backdrop-blur-md text-white px-4 py-2 rounded-full text-sm flex items-center space-x-2 shadow-lg group cursor-pointer transition-all duration-300 hover:scale-105 z-50`}>
       <div className="flex items-center space-x-2">
         <Zap className="w-4 h-4 animate-pulse" />
         <span className="font-medium">{co2Intensity}g CO₂/kWh</span>
@@ -47,8 +47,8 @@ export function OfficialDataBadge() {
       </div>
       <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
       
-      {/* Tooltip avec détails temps réel */}
-      <div className="absolute bottom-full right-0 mb-2 w-96 bg-gray-900/95 backdrop-blur-md text-white p-4 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+      {/* Tooltip avec détails temps réel - REPOSITIONNÉ */}
+      <div className="absolute bottom-full right-0 mb-2 w-96 bg-gray-900/95 backdrop-blur-md text-white p-4 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
         <h4 className="font-semibold mb-3 flex items-center">
           <TrendingUp className="w-4 h-4 mr-2" />
           Mix énergétique français - Temps réel
